@@ -94,40 +94,48 @@ namespace Meteorologico_API.Controllers
             }
 
             var (fromDate, toDate) = ResolveRange(from, to);
+            var series = new List<ChartSeriesDto>();
 
-            var rows = await (from m in _context.Measurements
-                              join t in _context.Tags on m.TagId equals t.TagId
-                              join p in _context.Params on t.ParId equals p.ParId
-                              join l in _context.Locations on t.LocId equals l.LocId
-                              where ids.Contains(m.TagId)
-                                    && m.TimeOfMeasurement >= fromDate
-                                    && m.TimeOfMeasurement <= toDate
-                              select new
-                              {
-                                  m.TagId,
-                                  StationName = l.LocName,
-                                  ParameterName = p.ParName,
-                                  Unit = p.Unit,
-                                  Timestamp = m.TimeOfMeasurement,
-                                  Value = m.MeasuredValue
-                              }).ToListAsync();
+            foreach (var tagId in ids)
+            {
+                var tagMeta = await (from t in _context.Tags
+                                     join p in _context.Params on t.ParId equals p.ParId
+                                     join l in _context.Locations on t.LocId equals l.LocId
+                                     where t.TagId == tagId
+                                     select new
+                                     {
+                                         l.LocName,
+                                         p.ParName,
+                                         p.Unit
+                                     }).FirstOrDefaultAsync();
 
-            var series = rows
-                .GroupBy(r => new { r.TagId, r.StationName, r.ParameterName, r.Unit })
-                .Select(g => new ChartSeriesDto
+                if (tagMeta == null)
                 {
-                    TagId = g.Key.TagId,
-                    StationName = g.Key.StationName,
-                    ParameterName = g.Key.ParameterName,
-                    Unit = g.Key.Unit,
-                    Points = g.OrderBy(p => p.Timestamp)
-                        .Take(MaxPoints)
-                        .Select(p => new ChartPointDto
-                        {
-                            Timestamp = p.Timestamp,
-                            Value = p.Value
-                        }).ToList()
-                }).ToList();
+                    continue;
+                }
+
+                var points = await _context.Measurements
+                    .Where(m => m.TagId == tagId
+                                && m.TimeOfMeasurement >= fromDate
+                                && m.TimeOfMeasurement <= toDate)
+                    .OrderBy(m => m.TimeOfMeasurement)
+                    .Take(MaxPoints)
+                    .Select(m => new ChartPointDto
+                    {
+                        Timestamp = m.TimeOfMeasurement,
+                        Value = m.MeasuredValue
+                    })
+                    .ToListAsync();
+
+                series.Add(new ChartSeriesDto
+                {
+                    TagId = tagId,
+                    StationName = tagMeta.LocName,
+                    ParameterName = tagMeta.ParName,
+                    Unit = tagMeta.Unit,
+                    Points = points
+                });
+            }
 
             return Ok(series);
         }
@@ -135,7 +143,10 @@ namespace Meteorologico_API.Controllers
         [HttpGet("latest/tag/{tagId}")]
         public async Task<IActionResult> GetLatestForTag(int tagId, [FromQuery] int limit = 100)
         {
-            if (limit <= 0 || limit > MaxPoints) limit = 100;
+            if (limit <= 0 || limit > MaxPoints)
+            {
+                limit = 100;
+            }
 
             var latest = await _context.Measurements
                 .Where(m => m.TagId == tagId)
@@ -156,6 +167,11 @@ namespace Meteorologico_API.Controllers
         {
             var toDate = to ?? DateTime.Now;
             var fromDate = from ?? toDate.AddHours(-DefaultRangeHours);
+
+            if (fromDate > toDate)
+            {
+                (fromDate, toDate) = (toDate, fromDate);
+            }
 
             fromDate = DateTime.SpecifyKind(fromDate, DateTimeKind.Unspecified);
             toDate = DateTime.SpecifyKind(toDate, DateTimeKind.Unspecified);

@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Meteorologico_API.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +18,11 @@ namespace Meteorologico_API.Controllers
         [HttpGet("current")]
         public async Task<IActionResult> GetCurrentMapData()
         {
-            var rows = await (from rv in _context.RecentValues
+            var latestReadings = _context.RecentValues.Where(rv =>
+                !_context.RecentValues.Any(other =>
+                    other.TagId == rv.TagId && other.TimeOfMeasurement > rv.TimeOfMeasurement));
+
+            var rows = await (from rv in latestReadings
                               join t in _context.Tags on rv.TagId equals t.TagId
                               join p in _context.Params on t.ParId equals p.ParId
                               join l in _context.Locations on t.LocId equals l.LocId
