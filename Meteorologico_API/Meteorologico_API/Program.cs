@@ -1,8 +1,11 @@
+using DotNetEnv;
 using Meteorologico_API.Data;
 using Meteorologico_API.Services;
 using Microsoft.EntityFrameworkCore;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,10 +25,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 3. Conexión a Supabase (PostgreSQL)
-// Se usa la configuración de appsettings.json o variable de entorno para evitar credenciales en el código fuente.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? Environment.GetEnvironmentVariable("SUPABASE_CONN_STRING");
+// 3. Conexión a Supabase (PostgreSQL) — leída del .env via SUPABASE_CONN_STRING
+var connectionString = Environment.GetEnvironmentVariable("SUPABASE_CONN_STRING")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
