@@ -21,7 +21,7 @@ namespace Meteorologico_API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // PostgreSQL es case-sensitive: columnas en Supabase están en minúsculas.
+            // Supabase preserva el case de SQL Server: columnas en MAYÚSCULAS, tablas en minúsculas.
             ConfigureLocations(modelBuilder);
             ConfigureParams(modelBuilder);
             ConfigureTags(modelBuilder);
@@ -37,11 +37,11 @@ namespace Meteorologico_API.Data
                 entity.ToTable("locations");
                 entity.HasKey(l => l.LocId);
 
-                entity.Property(l => l.LocId).HasColumnName("locid");
-                entity.Property(l => l.ParentLocId).HasColumnName("parentlocid");
-                entity.Property(l => l.LocName).HasColumnName("locname");
-                entity.Property(l => l.LocCode).HasColumnName("loccode");
-                entity.Property(l => l.DaqCode).HasColumnName("daqcode");
+                entity.Property(l => l.LocId).HasColumnName("LOCID");
+                entity.Property(l => l.ParentLocId).HasColumnName("PARENTLOCID");
+                entity.Property(l => l.LocName).HasColumnName("LOCNAME");
+                entity.Property(l => l.LocCode).HasColumnName("LOCCODE");
+                entity.Property(l => l.DaqCode).HasColumnName("DAQCODE");
             });
         }
 
@@ -52,13 +52,13 @@ namespace Meteorologico_API.Data
                 entity.ToTable("params");
                 entity.HasKey(p => p.ParId);
 
-                entity.Property(p => p.ParId).HasColumnName("parid");
-                entity.Property(p => p.ParCode).HasColumnName("parcode");
-                entity.Property(p => p.ParName).HasColumnName("parname");
-                entity.Property(p => p.Unit).HasColumnName("unit");
-                entity.Property(p => p.DispFactor).HasColumnName("dispfactor");
-                entity.Property(p => p.DispOffset).HasColumnName("dispoffset");
-                entity.Property(p => p.DispUnit).HasColumnName("dispunit");
+                entity.Property(p => p.ParId).HasColumnName("PARID");
+                entity.Property(p => p.ParCode).HasColumnName("PARCODE");
+                entity.Property(p => p.ParName).HasColumnName("PARNAME");
+                entity.Property(p => p.Unit).HasColumnName("UNIT");
+                entity.Property(p => p.DispFactor).HasColumnName("DISPFACTOR");
+                entity.Property(p => p.DispOffset).HasColumnName("DISPOFFSET");
+                entity.Property(p => p.DispUnit).HasColumnName("DISPUNIT");
             });
         }
 
@@ -69,17 +69,17 @@ namespace Meteorologico_API.Data
                 entity.ToTable("tags");
                 entity.HasKey(t => t.TagId);
 
-                entity.Property(t => t.TagId).HasColumnName("tagid");
-                entity.Property(t => t.LocId).HasColumnName("locid");
-                entity.Property(t => t.ParId).HasColumnName("parid");
-                entity.Property(t => t.TagName).HasColumnName("tagname");
-                entity.Property(t => t.TagCode).HasColumnName("tagcode");
-                entity.Property(t => t.LoLoLim).HasColumnName("lololim");
-                entity.Property(t => t.LoLim).HasColumnName("lolim");
-                entity.Property(t => t.HiLim).HasColumnName("hilim");
-                entity.Property(t => t.HiHiLim).HasColumnName("hihilim");
-                entity.Property(t => t.MinRange).HasColumnName("minrange");
-                entity.Property(t => t.MaxRange).HasColumnName("maxrange");
+                entity.Property(t => t.TagId).HasColumnName("TAGID");
+                entity.Property(t => t.LocId).HasColumnName("LOCID");
+                entity.Property(t => t.ParId).HasColumnName("PARID");
+                entity.Property(t => t.TagName).HasColumnName("TAGNAME");
+                entity.Property(t => t.TagCode).HasColumnName("TAGCODE");
+                entity.Property(t => t.LoLoLim).HasColumnName("LOLOLIM");
+                entity.Property(t => t.LoLim).HasColumnName("LOLIM");
+                entity.Property(t => t.HiLim).HasColumnName("HILIM");
+                entity.Property(t => t.HiHiLim).HasColumnName("HIHILIM");
+                entity.Property(t => t.MinRange).HasColumnName("MINRANGE");
+                entity.Property(t => t.MaxRange).HasColumnName("MAXRANGE");
 
                 entity.HasOne(t => t.Location)
                     .WithMany(l => l.Tags)
@@ -98,9 +98,9 @@ namespace Meteorologico_API.Data
                 entity.ToTable("measurements");
                 entity.HasKey(m => new { m.TagId, m.TimeOfMeasurement });
 
-                entity.Property(m => m.TagId).HasColumnName("tagid");
-                entity.Property(m => m.TimeOfMeasurement).HasColumnName("timeofmeasurement");
-                entity.Property(m => m.MeasuredValue).HasColumnName("measuredvalue");
+                entity.Property(m => m.TagId).HasColumnName("TAGID");
+                entity.Property(m => m.TimeOfMeasurement).HasColumnName("TIMEOFMEASUREMENT");
+                entity.Property(m => m.MeasuredValue).HasColumnName("MEASUREDVALUE");
 
                 entity.HasOne(m => m.Tag)
                     .WithMany(t => t.Measurements)
@@ -115,9 +115,9 @@ namespace Meteorologico_API.Data
                 entity.ToTable("recentvalues");
                 entity.HasKey(r => new { r.TagId, r.TimeOfMeasurement });
 
-                entity.Property(r => r.TagId).HasColumnName("tagid");
-                entity.Property(r => r.TimeOfMeasurement).HasColumnName("timeofmeasurement");
-                entity.Property(r => r.MeasuredValue).HasColumnName("measuredvalue");
+                entity.Property(r => r.TagId).HasColumnName("TAGID");
+                entity.Property(r => r.TimeOfMeasurement).HasColumnName("TIMEOFMEASUREMENT");
+                entity.Property(r => r.MeasuredValue).HasColumnName("MEASUREDVALUE");
 
                 entity.HasOne(r => r.Tag)
                     .WithMany(t => t.RecentValues)
@@ -132,9 +132,9 @@ namespace Meteorologico_API.Data
                 entity.ToTable("comments");
                 entity.HasKey(c => new { c.LocId, c.TimeOfComment });
 
-                entity.Property(c => c.LocId).HasColumnName("locid");
-                entity.Property(c => c.TimeOfComment).HasColumnName("timeofcomment");
-                entity.Property(c => c.CommentText).HasColumnName("comment");
+                entity.Property(c => c.LocId).HasColumnName("LOCID");
+                entity.Property(c => c.TimeOfComment).HasColumnName("TIMEOFCOMMENT");
+                entity.Property(c => c.CommentText).HasColumnName("COMMENT");
 
                 entity.HasOne(c => c.Location)
                     .WithMany(l => l.Comments)

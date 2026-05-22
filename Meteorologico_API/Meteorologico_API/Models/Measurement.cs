@@ -8,6 +8,6 @@ namespace Meteorologico_API.Models
         public DateTime TimeOfMeasurement { get; set; }
         public double? MeasuredValue { get; set; }
 
-        public Tag Tag { get; set; }
+        public Tag? Tag { get; set; }
     }
 }

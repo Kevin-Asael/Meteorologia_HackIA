@@ -6,8 +6,8 @@ namespace Meteorologico_API.Models
     {
         public int LocId { get; set; }
         public DateTime TimeOfComment { get; set; }
-        public string CommentText { get; set; }
+        public string? CommentText { get; set; }
 
-        public Location Location { get; set; }
+        public Location? Location { get; set; }
     }
 }
