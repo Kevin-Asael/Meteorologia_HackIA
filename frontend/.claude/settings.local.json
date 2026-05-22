@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(if \\(Test-Path \"node_modules/lucide-react/package.json\"\\) { \\(Get-Content \"node_modules/lucide-react/package.json\" | ConvertFrom-Json\\).version } else { \"NOT INSTALLED\" })"
+    ]
+  }
+}

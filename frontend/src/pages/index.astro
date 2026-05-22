@@ -1,0 +1,39 @@
+---
+import "../styles/global.css";
+import Dashboard from "../components/Dashboard";
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Meteorología Tulcán · HackIA</title>
+  </head>
+  <body class="bg-[#0b1220] min-h-screen text-slate-200">
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-white/5 text-white shadow-xl sticky top-0 z-[1100]">
+      <div class="px-6 py-4 flex items-center justify-between">
+        <div>
+          <h1 class="text-xl font-bold">🌦 Monitor Meteorológico de Tulcán</h1>
+          <p class="text-xs text-slate-300">Estaciones agrícolas en tiempo real · HackIA</p>
+        </div>
+        <nav class="flex gap-3 text-sm">
+          <a href="/" class="px-3 py-1.5 bg-white/10 rounded hover:bg-white/20 transition">
+            Mapa
+          </a>
+          <a
+            href="/graficas"
+            class="px-3 py-1.5 bg-white/5 rounded hover:bg-white/20 transition"
+          >
+            Gráficas
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <Dashboard client:only="react" />
+    </main>
+  </body>
+</html>
