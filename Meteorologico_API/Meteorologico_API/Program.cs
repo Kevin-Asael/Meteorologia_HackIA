@@ -10,6 +10,7 @@ Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Soporte para Controladores y Swagger
+// --- VERSIÓN VERIFICADA ESTABLE ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
