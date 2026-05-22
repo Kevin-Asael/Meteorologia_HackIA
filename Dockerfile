@@ -22,5 +22,5 @@ COPY --from=build-env /app/out .
 EXPOSE 8080
 ENV ASPNETCORE_HTTP_PORTS=8080
 
-# Comando de inicio de la aplicación
-ENTRYPOINT ["dotnet", "Meteorologico_API.dll"]
+# Comando de inicio de la aplicación, usando el puerto dinámico de Railway
+CMD ["sh", "-c", "ASPNETCORE_URLS=http://0.0.0.0:${PORT:-8080} dotnet Meteorologico_API.dll"]

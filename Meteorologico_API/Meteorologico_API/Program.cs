@@ -29,6 +29,12 @@ builder.Services.AddCors(options =>
 var connectionString = Environment.GetEnvironmentVariable("SUPABASE_CONN_STRING")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "Database connection string is missing. Set ConnectionStrings:DefaultConnection or SUPABASE_CONN_STRING.");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
