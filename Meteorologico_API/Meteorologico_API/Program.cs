@@ -2,6 +2,8 @@ using Meteorologico_API.Data;
 using Meteorologico_API.Services;
 using Microsoft.EntityFrameworkCore;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Soporte para Controladores y Swagger

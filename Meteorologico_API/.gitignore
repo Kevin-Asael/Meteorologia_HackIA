@@ -1,0 +1,25 @@
+## Visual Studio / .NET
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Credenciales y configuración local
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Local.json
+.env
+.env.local
+*.pfx
+*.p12
+
+## Logs
+*.log
+logs/
+
+## OS
+.DS_Store
+Thumbs.db
