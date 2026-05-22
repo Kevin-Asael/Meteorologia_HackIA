@@ -1,5 +1,6 @@
 import { Activity, MapPin, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import type { WeatherReading } from "../lib/types";
+import { useAnimatedNumber } from "../lib/useAnimatedNumber";
 
 interface StatsBarProps {
   readings: WeatherReading[];
@@ -21,17 +22,21 @@ export default function StatsBar({
   loading,
   onRefresh,
 }: StatsBarProps) {
-  const tempAvg = avg(readings.map((r) => r.temperature));
-  const humAvg = avg(readings.map((r) => r.humidity));
-  const rainTotal = readings.reduce((a, r) => a + r.rainfall, 0);
+  const tempAvg = useAnimatedNumber(avg(readings.map((r) => r.temperature)));
+  const humAvg = useAnimatedNumber(avg(readings.map((r) => r.humidity)));
+  const rainTotal = useAnimatedNumber(
+    readings.reduce((a, r) => a + r.rainfall, 0)
+  );
+  const stationCount = useAnimatedNumber(readings.length, 350);
 
   return (
     <div
       className="
         pointer-events-auto absolute top-4 left-4 z-[1000]
         rounded-2xl border border-white/15
-        bg-slate-900/60 backdrop-blur-2xl shadow-2xl
+        bg-slate-900/65 backdrop-blur-2xl shadow-2xl
         px-4 py-3 text-white
+        transition-all duration-300
       "
     >
       <div className="flex items-center gap-2 mb-2">
@@ -57,7 +62,11 @@ export default function StatsBar({
       </div>
 
       <div className="grid grid-cols-4 gap-3 mt-1">
-        <Stat label="Estaciones" value={`${readings.length}`} icon={<MapPin size={11} />} />
+        <Stat
+          label="Estaciones"
+          value={`${Math.round(stationCount)}`}
+          icon={<MapPin size={11} />}
+        />
         <Stat label="Temp. media" value={`${tempAvg.toFixed(1)}°`} />
         <Stat label="Humedad" value={`${humAvg.toFixed(0)}%`} />
         <Stat label="Lluvia 1h" value={`${rainTotal.toFixed(1)} mm`} />
@@ -82,14 +91,24 @@ export default function StatsBar({
   );
 }
 
-function Stat({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+function Stat({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+}) {
   return (
     <div className="min-w-0">
       <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-slate-400">
         {icon}
         {label}
       </div>
-      <div className="text-lg font-semibold tabular-nums">{value}</div>
+      <div key={value} className="text-lg font-semibold tabular-nums">
+        <span className="value-anim">{value}</span>
+      </div>
     </div>
   );
 }

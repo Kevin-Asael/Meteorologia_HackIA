@@ -6,6 +6,7 @@ import StationSidebar from "./StationSidebar";
 import LayerSelector from "./LayerSelector";
 import StatsBar from "./StatsBar";
 import MapHint from "./MapHint";
+import RainEffect from "./RainEffect";
 import { getWeatherReadings } from "../lib/api";
 import { useAlerts } from "../lib/useAlerts";
 import type { WeatherLayer, WeatherReading } from "../lib/types";
@@ -65,7 +66,6 @@ export default function Dashboard() {
       : null;
 
   const criticalCount = criticalFromAlerts(alertsState.alerts);
-  const showStationSidebar = selectedStationId !== null && !alertsOpen;
 
   return (
     <div className="p-4 h-[calc(100vh-72px)]">
@@ -77,6 +77,8 @@ export default function Dashboard() {
           onSelect={setSelectedStationId}
         />
 
+        {layer === "rain" && <RainEffect />}
+
         <StatsBar
           readings={readings}
           source={source}
@@ -87,7 +89,7 @@ export default function Dashboard() {
 
         <LayerSelector selected={layer} onChange={setLayer} />
 
-        {!alertsOpen && selectedStationId === null && (
+        {!alertsOpen && (
           <AlertsToggle
             count={alertsState.alerts.length}
             criticalCount={criticalCount}
@@ -95,7 +97,7 @@ export default function Dashboard() {
           />
         )}
 
-        {showStationSidebar && (
+        {selectedStationId !== null && (
           <StationSidebar
             reading={selectedReading}
             onClose={() => setSelectedStationId(null)}
@@ -114,6 +116,7 @@ export default function Dashboard() {
           error={alertsState.error}
           lastUpdate={alertsState.lastUpdate}
           onRefresh={alertsState.reload}
+          readings={readings}
         />
 
         {readings.length === 0 && !loading && (

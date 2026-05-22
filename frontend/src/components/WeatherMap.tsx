@@ -97,10 +97,43 @@ function labelFor(layer: WeatherLayer, r: WeatherReading): string {
   }
 }
 
+function layerEffectHTML(layer: WeatherLayer, color: string, windDeg: number | null): string {
+  switch (layer) {
+    case "temperature":
+      return `
+        <div class="layer-effect layer-effect-temp" style="--effect-color: ${color}">
+          <span></span><span></span><span></span><span></span>
+        </div>`;
+    case "rain":
+      return `
+        <div class="layer-effect layer-effect-rain" style="--effect-color: ${color}">
+          <span></span><span></span><span></span><span></span>
+        </div>`;
+    case "humidity":
+      return `
+        <div class="layer-effect layer-effect-humidity" style="--effect-color: ${color}">
+          <span></span><span></span><span></span>
+        </div>`;
+    case "wind":
+      if (windDeg === null) return "";
+      return `
+        <div class="layer-effect layer-effect-wind">
+          <div class="wind-arrow-rot" style="transform: rotate(${windDeg}deg)">
+            <div class="wind-arrow-pulse">
+              <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
+                <path d="M7 0L13 14H8V20H6V14H1L7 0Z" fill="${color}" stroke="white" stroke-width="1.5"/>
+              </svg>
+            </div>
+          </div>
+        </div>`;
+  }
+}
+
 function makeStationIcon(
   label: string,
   color: string,
   selected: boolean,
+  layer: WeatherLayer,
   windDeg: number | null
 ): L.DivIcon {
   const scale = selected ? 1.12 : 1;
@@ -108,22 +141,13 @@ function makeStationIcon(
     ? "0 0 0 5px rgba(255,255,255,0.6), 0 0 24px rgba(0,0,0,0.35)"
     : "0 6px 18px rgba(0,0,0,0.35)";
 
-  const arrow = windDeg !== null
-    ? `<div style="
-        position:absolute;top:-22px;left:50%;
-        transform: translateX(-50%) rotate(${windDeg}deg);
-        opacity:.9;
-      ">
-        <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
-          <path d="M7 0L13 14H8V20H6V14H1L7 0Z" fill="${color}" stroke="white" stroke-width="1.5"/>
-        </svg>
-      </div>`
-    : "";
+  const effect = layerEffectHTML(layer, color, windDeg);
 
   const html = `
     <div style="position:relative;transform: translate(-50%, -50%) scale(${scale});display:flex;flex-direction:column;align-items:center;gap:4px;font-family: ui-sans-serif, system-ui, sans-serif;">
-      ${arrow}
+      ${effect}
       <div style="
+        position:relative;
         background: ${color};
         color: #fff;
         font-weight: 700;
@@ -134,18 +158,21 @@ function makeStationIcon(
         box-shadow: ${ring};
         white-space: nowrap;
         text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+        z-index: 2;
       ">${label}</div>
       <div style="
+        position:relative;
         width: 12px; height: 12px; border-radius: 50%;
         background: ${color};
         border: 2.5px solid #fff;
         box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+        z-index: 2;
       "></div>
     </div>
   `;
   return L.divIcon({
     html,
-    className: "weather-marker",
+    className: `weather-marker${selected ? " is-selected" : ""}`,
     iconSize: [0, 0],
     iconAnchor: [0, 0],
   });
@@ -199,8 +226,10 @@ export default function WeatherMap({
           points={heat.points}
           max={heat.max}
           gradient={GRADIENTS[layer]}
-          radius={170}
-          blur={130}
+          radius={120}
+          blur={90}
+          hullPadding={30}
+          edgeFeather={32}
         />
       )}
 
@@ -213,9 +242,9 @@ export default function WeatherMap({
         const windDeg = layer === "wind" && reading ? reading.windDirection : null;
         return (
           <Marker
-            key={station.id}
+            key={`${station.id}-${layer}`}
             position={station.coords}
-            icon={makeStationIcon(label, color, selected, windDeg)}
+            icon={makeStationIcon(label, color, selected, layer, windDeg)}
             eventHandlers={{ click: () => onSelect(station.id) }}
           >
             <Tooltip direction="bottom" offset={[0, 14]} opacity={1}>
