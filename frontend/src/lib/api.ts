@@ -95,3 +95,41 @@ export async function getAlerts(): Promise<AlertItem[]> {
     return [];
   }
 }
+
+export interface ReportStation {
+  locId: number;
+  name: string | null;
+  code: string | null;
+}
+
+export interface ReportVariable {
+  parId: number;
+  name: string | null;
+  unit: string | null;
+}
+
+export interface ReportMetadata {
+  stations: ReportStation[];
+  variables: ReportVariable[];
+}
+
+export async function getReportMetadata(): Promise<ReportMetadata> {
+  return request<ReportMetadata>("/api/Reports/metadata");
+}
+
+export interface ReportFilters {
+  locIds: number[];
+  variables: string[];
+  startDate: string | null;
+  endDate: string | null;
+}
+
+export function buildReportCsvUrl(filters: ReportFilters): string {
+  const params = new URLSearchParams();
+  for (const id of filters.locIds) params.append("locIds", String(id));
+  for (const v of filters.variables) params.append("variables", v);
+  if (filters.startDate) params.set("startDate", filters.startDate);
+  if (filters.endDate) params.set("endDate", filters.endDate);
+  const qs = params.toString();
+  return `${API_BASE_URL}/api/Reports/csv${qs ? `?${qs}` : ""}`;
+}

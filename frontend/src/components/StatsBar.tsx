@@ -1,4 +1,4 @@
-import { Activity, MapPin, RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { Activity, Download, MapPin, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import type { WeatherReading } from "../lib/types";
 import { useAnimatedNumber } from "../lib/useAnimatedNumber";
 
@@ -8,6 +8,7 @@ interface StatsBarProps {
   lastUpdate: Date | null;
   loading: boolean;
   onRefresh: () => void;
+  onOpenReport: () => void;
 }
 
 function avg(nums: number[]): number {
@@ -21,6 +22,7 @@ export default function StatsBar({
   lastUpdate,
   loading,
   onRefresh,
+  onOpenReport,
 }: StatsBarProps) {
   const tempAvg = useAnimatedNumber(avg(readings.map((r) => r.temperature)));
   const humAvg = useAnimatedNumber(avg(readings.map((r) => r.humidity)));
@@ -72,16 +74,32 @@ export default function StatsBar({
         <Stat label="Lluvia 1h" value={`${rainTotal.toFixed(1)} mm`} />
       </div>
 
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
-        <div className="text-[10px] text-slate-400">
+      <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10 gap-2">
+        <div className="text-[10px] text-slate-400 flex-1 truncate">
           {lastUpdate
             ? `Act. ${lastUpdate.toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`
             : "—"}
         </div>
         <button
+          onClick={onOpenReport}
+          aria-label="Generar reporte CSV"
+          className="
+            inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px]
+            text-emerald-200 bg-emerald-500/10 border border-emerald-400/30
+            hover:bg-emerald-500/20 hover:text-white
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300
+            transition
+          "
+        >
+          <Download size={11} aria-hidden /> Reporte
+        </button>
+        <button
           onClick={onRefresh}
           disabled={loading}
-          className="text-slate-300 hover:text-white disabled:opacity-40 transition"
+          className="
+            text-slate-300 hover:text-white disabled:opacity-40 transition
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded
+          "
           aria-label="Actualizar"
         >
           <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
