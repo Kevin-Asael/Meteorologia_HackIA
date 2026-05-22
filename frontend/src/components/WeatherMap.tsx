@@ -15,30 +15,42 @@ interface WeatherMapProps {
 
 const GRADIENTS: Record<WeatherLayer, Record<number, string>> = {
   temperature: {
-    0.0: "rgba(56,189,248,0.55)",
-    0.25: "rgba(52,211,153,0.65)",
-    0.5: "rgba(251,191,36,0.75)",
-    0.75: "rgba(251,113,36,0.85)",
-    1.0: "rgba(239,68,68,0.95)",
+    0.0: "rgba(56,189,248,0.0)",
+    0.15: "rgba(56,189,248,0.7)",
+    0.35: "rgba(52,211,153,0.85)",
+    0.55: "rgba(251,191,36,0.9)",
+    0.75: "rgba(251,113,36,0.95)",
+    1.0: "rgba(239,68,68,1)",
   },
   wind: {
-    0.0: "rgba(196,181,253,0.45)",
-    0.4: "rgba(167,139,250,0.7)",
-    0.7: "rgba(139,92,246,0.85)",
+    0.0: "rgba(196,181,253,0.0)",
+    0.2: "rgba(196,181,253,0.75)",
+    0.5: "rgba(167,139,250,0.9)",
+    0.8: "rgba(139,92,246,0.95)",
     1.0: "rgba(109,40,217,1)",
   },
   rain: {
-    0.0: "rgba(147,197,253,0.4)",
-    0.4: "rgba(96,165,250,0.7)",
-    0.7: "rgba(59,130,246,0.85)",
+    0.0: "rgba(147,197,253,0.0)",
+    0.2: "rgba(147,197,253,0.8)",
+    0.5: "rgba(96,165,250,0.9)",
+    0.8: "rgba(59,130,246,0.95)",
     1.0: "rgba(29,78,216,1)",
   },
   humidity: {
-    0.0: "rgba(94,234,212,0.45)",
-    0.4: "rgba(45,212,191,0.65)",
-    0.7: "rgba(20,184,166,0.8)",
+    0.0: "rgba(94,234,212,0.0)",
+    0.2: "rgba(94,234,212,0.75)",
+    0.5: "rgba(45,212,191,0.9)",
+    0.8: "rgba(20,184,166,0.95)",
     1.0: "rgba(13,148,136,1)",
   },
+};
+
+// Escalas absolutas para que el color sea consistente sin importar el rango actual
+const LAYER_SCALE: Record<WeatherLayer, { min: number; max: number }> = {
+  temperature: { min: 0, max: 30 },
+  wind: { min: 0, max: 12 },
+  rain: { min: 0, max: 15 },
+  humidity: { min: 0, max: 100 },
 };
 
 function getMetric(layer: WeatherLayer, r: WeatherReading): number {
@@ -53,26 +65,26 @@ function getMetric(layer: WeatherLayer, r: WeatherReading): number {
 function colorFor(layer: WeatherLayer, r: WeatherReading): string {
   switch (layer) {
     case "temperature":
-      if (r.temperature <= 8) return "#38bdf8";
-      if (r.temperature <= 14) return "#22d3ee";
-      if (r.temperature <= 20) return "#34d399";
-      if (r.temperature <= 26) return "#fbbf24";
-      return "#ef4444";
+      if (r.temperature <= 8) return "#0284c7";
+      if (r.temperature <= 14) return "#0891b2";
+      if (r.temperature <= 20) return "#059669";
+      if (r.temperature <= 26) return "#d97706";
+      return "#dc2626";
     case "wind":
-      if (r.windSpeed < 2) return "#c4b5fd";
-      if (r.windSpeed < 4) return "#a78bfa";
-      if (r.windSpeed < 6) return "#8b5cf6";
-      return "#6d28d9";
+      if (r.windSpeed < 2) return "#7c3aed";
+      if (r.windSpeed < 4) return "#6d28d9";
+      if (r.windSpeed < 6) return "#5b21b6";
+      return "#4c1d95";
     case "rain":
-      if (r.rainfall < 0.5) return "#93c5fd";
-      if (r.rainfall < 2) return "#60a5fa";
-      if (r.rainfall < 5) return "#3b82f6";
-      return "#1d4ed8";
+      if (r.rainfall < 0.5) return "#3b82f6";
+      if (r.rainfall < 2) return "#2563eb";
+      if (r.rainfall < 5) return "#1d4ed8";
+      return "#1e3a8a";
     case "humidity":
-      if (r.humidity < 50) return "#5eead4";
-      if (r.humidity < 70) return "#2dd4bf";
-      if (r.humidity < 85) return "#14b8a6";
-      return "#0d9488";
+      if (r.humidity < 50) return "#14b8a6";
+      if (r.humidity < 70) return "#0d9488";
+      if (r.humidity < 85) return "#0f766e";
+      return "#115e59";
   }
 }
 
@@ -93,17 +105,17 @@ function makeStationIcon(
 ): L.DivIcon {
   const scale = selected ? 1.12 : 1;
   const ring = selected
-    ? "0 0 0 5px rgba(255,255,255,0.25), 0 0 24px rgba(255,255,255,0.35)"
-    : "0 6px 18px rgba(0,0,0,0.55)";
+    ? "0 0 0 5px rgba(255,255,255,0.6), 0 0 24px rgba(0,0,0,0.35)"
+    : "0 6px 18px rgba(0,0,0,0.35)";
 
   const arrow = windDeg !== null
     ? `<div style="
         position:absolute;top:-22px;left:50%;
         transform: translateX(-50%) rotate(${windDeg}deg);
-        opacity:.85;
+        opacity:.9;
       ">
         <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
-          <path d="M7 0L13 14H8V20H6V14H1L7 0Z" fill="#ffffff" stroke="rgba(0,0,0,0.4)" stroke-width="1"/>
+          <path d="M7 0L13 14H8V20H6V14H1L7 0Z" fill="${color}" stroke="white" stroke-width="1.5"/>
         </svg>
       </div>`
     : "";
@@ -118,16 +130,16 @@ function makeStationIcon(
         font-size: 13px;
         padding: 6px 12px;
         border-radius: 999px;
-        border: 2px solid rgba(255,255,255,0.9);
+        border: 2px solid #fff;
         box-shadow: ${ring};
         white-space: nowrap;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+        text-shadow: 0 1px 2px rgba(0,0,0,0.45);
       ">${label}</div>
       <div style="
         width: 12px; height: 12px; border-radius: 50%;
         background: ${color};
-        border: 2px solid rgba(255,255,255,0.95);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.55);
+        border: 2.5px solid #fff;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.4);
       "></div>
     </div>
   `;
@@ -153,14 +165,13 @@ export default function WeatherMap({
   }, [readings]);
 
   const heat = useMemo(() => {
+    const { max } = LAYER_SCALE[layer];
     const points: Array<[number, number, number]> = [];
-    let max = 0;
     for (const { station, reading } of merged) {
       if (!reading) continue;
       const value = getMetric(layer, reading);
       const v = Math.max(0, value);
       points.push([station.coords[0], station.coords[1], v]);
-      if (v > max) max = v;
     }
     return { points, max };
   }, [merged, layer]);
@@ -174,11 +185,11 @@ export default function WeatherMap({
       scrollWheelZoom
       zoomControl={false}
       className="absolute inset-0 w-full h-full"
-      style={{ background: "#0b1220" }}
+      style={{ background: "#e6ecf2" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://carto.com/attributions">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         subdomains="abcd"
       />
 
@@ -186,10 +197,10 @@ export default function WeatherMap({
         <HeatmapLayer
           key={layer}
           points={heat.points}
-          max={heat.max || 1}
+          max={heat.max}
           gradient={GRADIENTS[layer]}
-          radius={90}
-          blur={70}
+          radius={170}
+          blur={130}
         />
       )}
 

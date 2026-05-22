@@ -9,6 +9,10 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   integrations: [react()],
 
+  devToolbar: {
+    enabled: false,
+  },
+
   vite: {
     plugins: [tailwindcss()]
   }

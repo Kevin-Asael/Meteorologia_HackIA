@@ -59,11 +59,13 @@ export default function StationSidebar({ reading, onClose }: StationSidebarProps
 
   return (
     <aside
+      role="dialog"
+      aria-label={`Detalles de la estación ${reading.stationName}`}
       className="
-        pointer-events-auto absolute top-4 right-4 z-[1000]
-        w-[340px] max-h-[calc(100vh-2rem)] overflow-y-auto
+        pointer-events-auto absolute top-24 right-4 z-[1000]
+        w-[320px] max-h-[calc(100%-10rem)] overflow-y-auto
         rounded-3xl border border-white/15
-        bg-slate-900/55 backdrop-blur-2xl shadow-2xl
+        bg-slate-900/75 backdrop-blur-2xl shadow-2xl
         text-white
         animate-[fadeIn_.18s_ease-out]
       "
