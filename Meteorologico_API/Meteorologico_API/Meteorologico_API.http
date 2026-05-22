@@ -1,0 +1,6 @@
+@Meteorologico_API_HostAddress = http://localhost:5058
+
+GET {{Meteorologico_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
