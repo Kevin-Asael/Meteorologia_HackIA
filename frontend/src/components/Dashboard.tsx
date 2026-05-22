@@ -29,7 +29,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [alertsOpen, setAlertsOpen] = useState(false);
-  const [reportOpen, setReportOpen] = useState(false);
 
   const alertsState = useAlerts();
 
@@ -87,7 +86,6 @@ export default function Dashboard() {
           lastUpdate={lastUpdate}
           loading={loading}
           onRefresh={load}
-          onOpenReport={() => setReportOpen(true)}
         />
 
         <LayerSelector selected={layer} onChange={setLayer} />
@@ -121,8 +119,6 @@ export default function Dashboard() {
           onRefresh={alertsState.reload}
           readings={readings}
         />
-
-        <ReportBuilder open={reportOpen} onClose={() => setReportOpen(false)} />
 
         {readings.length === 0 && !loading && (
           <div className="absolute inset-0 z-[900] flex items-center justify-center pointer-events-none">

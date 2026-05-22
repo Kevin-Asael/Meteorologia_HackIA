@@ -8,7 +8,6 @@ interface StatsBarProps {
   lastUpdate: Date | null;
   loading: boolean;
   onRefresh: () => void;
-  onOpenReport: () => void;
 }
 
 function avg(nums: number[]): number {
@@ -22,7 +21,6 @@ export default function StatsBar({
   lastUpdate,
   loading,
   onRefresh,
-  onOpenReport,
 }: StatsBarProps) {
   const tempAvg = useAnimatedNumber(avg(readings.map((r) => r.temperature)));
   const humAvg = useAnimatedNumber(avg(readings.map((r) => r.humidity)));
@@ -80,19 +78,6 @@ export default function StatsBar({
             ? `Act. ${lastUpdate.toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`
             : "—"}
         </div>
-        <button
-          onClick={onOpenReport}
-          aria-label="Generar reporte CSV"
-          className="
-            inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px]
-            text-emerald-200 bg-emerald-500/10 border border-emerald-400/30
-            hover:bg-emerald-500/20 hover:text-white
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300
-            transition
-          "
-        >
-          <Download size={11} aria-hidden /> Reporte
-        </button>
         <button
           onClick={onRefresh}
           disabled={loading}
