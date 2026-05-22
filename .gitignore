@@ -57,3 +57,6 @@ _ReSharper*/
 # Project-specific overrides
 node_modules/
 .env
+**/appsettings.json
+appsettings.json
+appsettings.Development.json
